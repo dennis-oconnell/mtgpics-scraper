@@ -1,0 +1,1 @@
+package mtgpics_scraper_test
