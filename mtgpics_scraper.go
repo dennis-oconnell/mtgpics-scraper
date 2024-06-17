@@ -2,26 +2,43 @@ package mtgpics_scraper
 
 import (
 	"fmt"
+	"regexp"
 
 	"github.com/gocolly/colly"
 )
 
-func Scrape() string {
-	c := colly.NewCollector(
-	)
+func ScrapeArtPics() string {
+	// Initialize a new Colly collector
+	c := colly.NewCollector()
 
+	// Initialize a data structure to hold scraped data
+	type cardImage struct {
+		url, cardName, artistName, setName string
+	}
+
+	// On every HTML element which contains a style attribute with a background
 	c.OnHTML("div[style*='background']", func(e *colly.HTMLElement) {
-		// Extracting the nested information
-		cardName := e.ChildText(".Card12 a.und")
-		setName := e.ChildText(".Card12 a[href^='art?set=']")
-		artistInfo := e.ChildText(".S10 a[href^='art?set=']")
-		imageDimensions := e.ChildText(".S10")
 
-		// Printing the information
-		fmt.Println("Card Name:", cardName)
-		fmt.Println("Set Name:", setName)
-		fmt.Println("Artist Info:", artistInfo)
-		fmt.Println("Image Dimensions:", imageDimensions)
+		//Extract the style attribute of the html element
+		style := e.Attr("style")
+
+		// Use regex to find the background URL
+        re := regexp.MustCompile(`url\((.*?)\)`)
+        match := re.FindStringSubmatch(style)
+		
+		// Disregard the dud images by ignoring the elements with a background image url of length less than 1
+		if len(match) > 1 {
+			currentImage := cardImage{}
+
+			currentImage.cardName = e.ChildText(".Card12 a.und")
+			currentImage.url = match[1]
+			currentImage.artistName = e.ChildText(".S10 a[href^='art?set=']")
+			currentImage.setName = e.ChildText(".Card12 a[href^='art?set=']")
+
+			fmt.Println(currentImage)
+
+        } 
+		
 	})
 
 	// Before making a request print "Visiting ..."

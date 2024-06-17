@@ -7,5 +7,5 @@ import (
 
 func main() {
 	fmt.Println("Hello World!")
-	fmt.Println(mtgpics_scraper.Scrape())
+	fmt.Println(mtgpics_scraper.ScrapeArtPics())
 }
