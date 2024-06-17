@@ -13,7 +13,7 @@ func ScrapeArtPics() string {
 
 	// Initialize a data structure to hold scraped data
 	type cardImage struct {
-		url, cardName, artistName, setName string
+		imageURL, cardName, artistName, setName string
 	}
 
 	// On every HTML element which contains a style attribute with a background
@@ -31,12 +31,11 @@ func ScrapeArtPics() string {
 			currentImage := cardImage{}
 
 			currentImage.cardName = e.ChildText(".Card12 a.und")
-			currentImage.url = match[1]
+			currentImage.imageURL = match[1]
 			currentImage.artistName = e.ChildText(".S10 a[href^='art?set=']")
 			currentImage.setName = e.ChildText(".Card12 a[href^='art?set=']")
 
 			fmt.Println(currentImage)
-
         } 
 		
 	})
@@ -48,6 +47,10 @@ func ScrapeArtPics() string {
 
 	// Start scraping on mtgpics at the set selected
 	c.Visit("https://www.mtgpics.com/art?set=421")
+	c.Visit("https://www.mtgpics.com/art?set=421&pointeur=60")
+	c.Visit("https://www.mtgpics.com/art?set=421&pointeur=120")
+	c.Visit("https://www.mtgpics.com/art?set=421&pointeur=180")
+	c.Visit("https://www.mtgpics.com/art?set=421&pointeur=240")
 
-	return "Get Scraped!"
+	return "All done scraping!"
 }
