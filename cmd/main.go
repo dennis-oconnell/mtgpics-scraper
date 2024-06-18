@@ -1,11 +1,13 @@
 package main
 
 import (
-	"fmt"
 	"mtgpics_scraper"
+
+	"github.com/davecgh/go-spew/spew"
 )
 
 func main() {
-	fmt.Println("Hello World!")
-	fmt.Println(mtgpics_scraper.ScrapeArtPics())
+	//fmt.Println(mtgpics_scraper.ScrapeArtPics())
+
+	spew.Dump(mtgpics_scraper.ScrapeArtPics())
 }

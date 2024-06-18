@@ -3,18 +3,22 @@ package mtgpics_scraper
 import (
 	"fmt"
 	"regexp"
+	"strings"
 
 	"github.com/gocolly/colly"
 )
 
-func ScrapeArtPics() string {
+// Initialize a data structure to hold scraped data
+type cardImage struct {
+	imageURL, cardName, artistName, setName string
+}
+
+func ScrapeArtPics() []cardImage {
 	// Initialize a new Colly collector
 	c := colly.NewCollector()
 
-	// Initialize a data structure to hold scraped data
-	type cardImage struct {
-		imageURL, cardName, artistName, setName string
-	}
+	// Initialize a slice of cardImages
+	var cardImages []cardImage
 
 	// On every HTML element which contains a style attribute with a background
 	c.OnHTML("div[style*='background']", func(e *colly.HTMLElement) {
@@ -35,7 +39,9 @@ func ScrapeArtPics() string {
 			currentImage.artistName = e.ChildText(".S10 a[href^='art?set=']")
 			currentImage.setName = e.ChildText(".Card12 a[href^='art?set=']")
 
-			fmt.Println(currentImage)
+			currentImage.imageURL = cleanUpURL(currentImage.imageURL)
+
+			cardImages = append(cardImages, currentImage)
         } 
 		
 	})
@@ -52,5 +58,16 @@ func ScrapeArtPics() string {
 	c.Visit("https://www.mtgpics.com/art?set=421&pointeur=180")
 	c.Visit("https://www.mtgpics.com/art?set=421&pointeur=240")
 
-	return "All done scraping!"
+	return cardImages
+}
+
+func cleanUpURL(s string) string{
+	// Add base url of mtgpics.com
+	s = "https://mtgpics.com/" + s
+
+	// Modify the url to link the true size image instead of the smaller preview size
+	toDelete := "_th_big"
+	s = strings.Replace(s,toDelete,"", 1)
+
+	return s
 }
